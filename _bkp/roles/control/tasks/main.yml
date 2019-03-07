@@ -1,0 +1,11 @@
+---
+# tasks file for control
+  - name: install tools
+    yum: 
+      name: "{{ packages  }}"
+      state: present
+      update_cache: yes
+    vars: 
+      packages:
+        - curl
+        - python-httplib2

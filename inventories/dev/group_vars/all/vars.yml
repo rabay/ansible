@@ -1,0 +1,14 @@
+---
+ # file: group_vars/all
+  db_name: demo
+  db_user: demo
+  db_pass: demo
+  roles:
+#    - role: demo_app
+#      demo_app_db_name: "{{ db_name }}"
+#      demo_app_db_user: "{{ db_user }}"
+#      demo_app_db_pass: "{{ db_pass }}"
+#    - role: mariadb
+#      db_username: "{{ db_user }}"
+#      db_userpass: "{{ db_pass }}"
+#      db_userhost: '%' 

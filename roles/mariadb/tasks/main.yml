@@ -1,0 +1,52 @@
+---
+# tasks file for mariadb
+  - name: enable proxy cntlm
+    command: systemctl start cntlm
+    tags:
+      - packages
+
+  - name: install tools and pre-requisites
+    yum: 
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+      - MySQL-python
+    tags: 
+      - packages
+  
+  - name: install mariadb-server
+    yum: 
+      name: mariadb-server
+      state: present
+    tags: 
+      - packages
+      
+  - name: ensure mariadb configuration to listen on instance IP
+    lineinfile: 
+      dest: /etc/my.cnf.d/server.cnf
+      regexp: "^bind"
+      line: "bind = {{ ansible_eth0.ipv4.address }}"
+    notify: restart mariadb
+    tags: 
+      - configure
+      
+  - name: ensure mariadb started
+    service: name=mariadb state=started enabled=yes
+    tags: 
+      - service
+
+  - name: create database
+    mysql_db: name={{ db_name }} state=present
+    tags: 
+      - configure
+    
+  - name: create database user
+    mysql_user: name={{ db_username }} password={{ db_userpass }} priv={{ db_name }}.*:ALL host='{{ db_userhost }}' state=present
+    tags: 
+      - configure
+      
+  - name: disable proxy cntlm
+    command: systemctl stop cntlm
+    tags:
+      - packages

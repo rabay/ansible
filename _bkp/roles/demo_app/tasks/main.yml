@@ -1,0 +1,47 @@
+---
+# tasks file for demo_app
+  - name: enable proxy cntlm
+    command: systemctl start cntlm
+    
+  - name: install web components
+    yum:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+      skip_broken: yes
+    vars:
+      packages:
+        - python-devel
+        - python-setuptools
+        - python-pip
+        - MySQL-python
+        - python-httplib2
+        
+  - name: install pip
+    command: pip install -U pip
+    
+  - name: install virtualenv
+    command: pip install -U virtualenv
+    
+  - name: copy demo app source
+    copy: src=demo/app/ dest=/var/www/demo mode=0755
+    notify: restart httpd
+    
+  - name: copy demo app wsgi file
+    template: src=demo.wsgi.j2 dest=/var/www/demo/demo.wsgi
+    notify: restart httpd    
+    
+  - name: copy httpd virtualhost config
+    copy: src=demo/demo.conf dest=/etc/httpd/sites-avaiable mode=0755
+    notify: restart httpd
+         
+  - name: activate demo site
+    file: src=/etc/httpd/sites-avaiable/demo.conf dest=/etc/httpd/conf.d/demo.conf state=link
+    notify: restart httpd
+    
+  - name: python virtual environment
+    pip: requirements=/var/www/demo/requirements.txt virtualenv=/var/www/demo/.venv
+    notify: restart httpd
+    
+  - name: disable proxy cntlm
+    command: systemctl stop cntlm

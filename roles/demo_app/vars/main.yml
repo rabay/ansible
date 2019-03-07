@@ -1,0 +1,5 @@
+---
+# vars file for demo_app
+demo_app_db_name: "{{ db_name }}"
+demo_app_db_user: "{{ db_user }}"
+demo_app_db_pass: "{{ db_pass }}"

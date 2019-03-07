@@ -1,0 +1,41 @@
+---
+# tasks file for httpd
+
+  - name: enable proxy cntlm
+    command: systemctl start cntlm
+    tags:
+      - packages
+      
+  - name: install web components
+    yum:
+      name: "{{ packages }}"
+      state: present
+      skip_broken: yes
+    vars:
+      packages:
+        - httpd
+        - mod_wsgi
+    tags:
+      - packages
+        
+  - name: ensure mod_wsgi enabled
+    apache2_module: state=present name=wsgi
+    notify: restart httpd
+    tags:
+      - configure
+    
+  - name: de-activate default httpd site
+    file: path=/etc/httpd/conf.d/welcome.conf state=absent
+    notify: restart httpd
+    tags: 
+      - configure
+    
+  - name: ensure httpd started
+    service: name=httpd state=started enabled=yes
+    tags: 
+      - service
+      
+  - name: disable proxy cntlm
+    command: systemctl stop cntlm
+    tags:
+      - packages

@@ -1,0 +1,22 @@
+---
+#site.yml
+  - hosts: all
+    become: true
+    gather_facts: false
+    tasks:
+      - name: clean yum cache
+        shell: yum clean all 
+        args: 
+          warn: false
+        tags:
+          - packages
+      - name: update yum cache
+        shell: yum makecache fast 
+        args:
+          warn: false
+        tags:
+          - packages
+  - import_playbook: control.yml
+  - import_playbook: database.yml
+  - import_playbook: webserver.yml
+  - import_playbook: loadbalancer.yml

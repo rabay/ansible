@@ -1,0 +1,37 @@
+---
+# Bring stack down
+
+  - hosts: loadbalancer
+    become: true
+    tasks:
+    - name: stop nginx service
+      service: name=nginx state=stopped
+    - name: reboot nginx server
+      reboot:
+        reboot_timeout: 240
+        test_command: mount
+        
+  - hosts: webserver
+    become: true
+    tasks: 
+    - name: stop httpd service
+      service: name=httpd state=stopped
+    - name: reboot nginx server
+      reboot:
+        reboot_timeout: 240
+        test_command: mount
+
+  - hosts: database
+    become: true
+    tasks: 
+    - name: stop mariadb service
+      service: name=mariadb state=stopped
+    - name: reboot mariadb server
+      reboot:
+        reboot_timeout: 1200
+        test_command: mount
+      
+  
+  #localectl set-locale LANG=en_US.UTF-8
+  
+  

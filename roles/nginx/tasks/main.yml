@@ -1,0 +1,69 @@
+---
+# tasks file for nginx
+  - name: enable proxy cntlm
+    command: systemctl start cntlm
+    tags:
+      - packages
+
+  - name: install nginx
+    yum: 
+      name: nginx
+      state: present
+    tags:
+      - packages
+
+  - name: de-activate default nginx site (update nginx.conf)
+    copy: 
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      mode: 0644
+      force: yes 
+    notify: restart nginx
+    tags:
+      - configure
+    
+  - name: get other nginx sites
+#    shell: ls -1 /etc/nginx/conf.d/
+    shell: find /etc/nginx/conf.d/ -type f -iname "*.conf" -exec basename {} .conf ';'
+    register: active
+    changed_when: "active.stdout_lines != sites.keys()"
+    tags:
+      - configure
+  
+#  - name: Debug task get other nginx sites
+#    debug: 
+#      msg: "Debug - {{active.stdout_lines}} - {{sites.keys()}}"
+#    tags:
+#      - configure
+    
+  - name: de-activate other nginx sites
+    file: path=/etc/nginx/conf.d/{{ item }} state=absent
+    with_items: "{{ active.stdout_lines }}"
+    when: item not in sites
+    notify: restart nginx
+    tags:
+      - configure
+  
+  - name: configure nginx new site
+    template: 
+      src: demo.nginx.conf.j2
+      dest: /etc/nginx/conf.d/{{ item.key }}.conf
+      mode: 0644
+    with_dict: 
+      - "{{ sites }}"
+    notify: restart nginx
+    tags:
+      - configure
+     
+  - name: ensure nginx started
+    service: 
+      name: nginx
+      state: started
+      enabled: yes
+    tags:
+      - service
+      
+  - name: disable proxy cntlm
+    command: systemctl stop cntlm
+    tags:
+      - packages

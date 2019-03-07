@@ -1,0 +1,11 @@
+---
+  - hosts: webserver
+    become: true
+    gather_facts: false
+    roles:
+      - role: httpd
+      - role: demo_app
+#        vars:
+#          demo_app_db_name: "{{ db_name }}"
+#          demo_app_db_user: "{{ db_user }}"
+#          demo_app_db_pass: "{{ db_pass }}"

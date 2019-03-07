@@ -1,0 +1,19 @@
+---
+# tasks file for control
+  - name: install tools
+    yum: 
+      name: "{{ packages  }}"
+      state: present
+    vars: 
+      packages:
+        - curl
+        - python-httplib2
+        - wget
+        - links
+        - net-tools
+        - mlocate
+        - telnet
+        - htop
+        - ca-certificates
+    tags:
+      - packages
