@@ -1,6 +1,0 @@
----
-  - hosts: webserver
-    become: true
-    roles:
-    - role: httpd
-    - role: demo_app
