@@ -1,0 +1,10 @@
+---
+- hosts: 
+  - loadbalancer
+  - webserver
+  - database
+  become: true
+  gather_facts: false
+  tasks:
+    - name: shutdown all servers
+      command: shutdown -P +5

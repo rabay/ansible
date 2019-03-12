@@ -29,6 +29,10 @@
     changed_when: "active.stdout_lines != sites.keys()"
     tags:
       - configure
+
+#  - debug: var=active.stdout_lines
+
+#  - debug: var=vars
   
 #  - name: Debug task get other nginx sites
 #    debug: 
@@ -41,6 +45,7 @@
     with_items: "{{ active.stdout_lines }}"
     when: item not in sites
     notify: restart nginx
+#    ignore_errors: True
     tags:
       - configure
   
